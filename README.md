@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI STOCK PREDICTION SYSTEM
 ### Indian Market Data & Intelligent Stock Analytics
 
@@ -91,3 +92,6 @@ All stocks are fetched in native **₹ INR**:
 **Answer:** 
 - **$X$ (Feature Matrix):** `Open`, `High`, `Low`, `Volume`, `SMA_20`, `EMA_20`, `Daily_Return`, `Volume_Change`, `RSI`.
 - **$y$ (Target Vector):** `Next_Day_Close` (`Close.shift(-1)` in ₹ INR) representing the next trading day's closing price.
+=======
+# AIStockPredictionSystem
+>>>>>>> d53f300186a38cde98ccbad0cb081a41e7b2941e
