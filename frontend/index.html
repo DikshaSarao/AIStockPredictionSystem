@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI STOCK PREDICTION SYSTEM — Market Data &amp; Analytics</title>
+  
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js for Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Clean Fintech Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ============================================================== -->
+  <!-- 1. OPENING ANIMATION (3.5 seconds max with skip option) -->
+  <!-- ============================================================== -->
+  <div id="opening-animation" class="opening-animation-overlay">
+    <div class="anim-grid"></div>
+    <canvas id="anim-chart-canvas" class="anim-chart-canvas"></canvas>
+    
+    <!-- Floating market ticker chips -->
+    <div class="floating-ticker ticker-1">RELIANCE.NS <span class="up">₹1,322.00 (+1.50%)</span></div>
+    <div class="floating-ticker ticker-2">TCS.NS <span class="up">₹2,304.00 (+0.85%)</span></div>
+    <div class="floating-ticker ticker-3">INFY.NS <span class="up">₹1,130.00 (+1.12%)</span></div>
+    <div class="floating-ticker ticker-4">HDFCBANK.NS <span class="up">₹712.10 (+0.65%)</span></div>
+
+    <!-- Central Branding Card -->
+    <div class="anim-center-card">
+      <div class="anim-icon-glow">
+        <i data-lucide="trending-up"></i>
+      </div>
+      <h1 class="anim-title">AI STOCK PREDICTION SYSTEM</h1>
+      <p class="anim-subtitle">Indian Market Data &amp; Intelligent Stock Analytics</p>
+      <div class="anim-progress-bar"><div class="anim-progress-fill"></div></div>
+      <div class="anim-status-label">Initializing Market Engine...</div>
+    </div>
+
+    <!-- Skip Button -->
+    <button id="skip-anim-btn" class="anim-skip-btn">
+      <span>Skip Intro</span>
+      <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+    </button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 2. LOGIN PAGE (Premium Glassmorphism Card & Guest Option) -->
+  <!-- ============================================================== -->
+  <div id="login-overlay" class="login-page-overlay hidden">
+    <div class="login-bg-grid"></div>
+    
+    <div class="glass-panel login-card">
+      <div class="login-brand-header">
+        <div class="login-brand-icon">
+          <i data-lucide="trending-up"></i>
+        </div>
+        <h2>AI STOCK PREDICTION SYSTEM</h2>
+        <p class="login-brand-sub">Indian Market Data &amp; Intelligent Stock Analytics</p>
+      </div>
+
+      <div class="login-welcome-text">
+        <h3>Welcome Back</h3>
+        <p>Access your market analytics dashboard</p>
+      </div>
+
+      <form id="login-form">
+        <div class="login-input-group">
+          <label for="login-email">Email</label>
+          <div class="input-with-icon">
+            <i data-lucide="mail"></i>
+            <input type="email" id="login-email" class="fintech-input" value="analyst@marketpulse.ai" placeholder="name@company.com" required>
+          </div>
+        </div>
+
+        <div class="login-input-group">
+          <label for="login-password">Password</label>
+          <div class="input-with-icon">
+            <i data-lucide="lock"></i>
+            <input type="password" id="login-password" class="fintech-input" value="••••••••" placeholder="Password" required>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="btn-accent btn-login-action">
+          <span>LOGIN</span>
+          <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+        </button>
+
+        <div class="login-divider">
+          <span>OR</span>
+        </div>
+
+        <button type="button" id="btn-guest-submit" class="btn-outline btn-guest-action">
+          <i data-lucide="user-check" style="width: 16px; height: 16px; color: #38bdf8;"></i>
+          <span>Continue as Guest</span>
+        </button>
+      </form>
+
+      <div class="login-footer-meta">
+        <span>Exchange: NSE India</span>
+        <span>•</span>
+        <span style="color: #10b981; font-weight: 600;">₹ INR Native</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div style="font-weight: 700; color: #38bdf8; font-size: 1.05rem; letter-spacing: 0.05em;">SYNCING MARKET DATA...</div>
+    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;">Fetching latest available data from Yahoo Finance</div>
+  </div>
+
+  <div class="app-container" style="display: none;">
+    
+    <!-- Professional Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-main">
+          <i data-lucide="trending-up" style="color: var(--primary);"></i>
+          <span>AI STOCK</span>
+        </div>
+        <div class="brand-sub">PREDICTION SYSTEM</div>
+        <div style="font-size: 0.68rem; color: #38bdf8; margin-top: 4px; font-weight: 600;">Indian Market Data &amp; Analytics</div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-label">Analytics Platform</div>
+        <a class="menu-item active" data-section="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a class="menu-item" data-section="explore">
+          <i data-lucide="compass"></i>
+          <span>Explore Stocks</span>
+        </a>
+        <a class="menu-item" data-section="analysis">
+          <i data-lucide="line-chart"></i>
+          <span>Market Analysis</span>
+        </a>
+        <a class="menu-item" data-section="insights">
+          <i data-lucide="activity"></i>
+          <span>Technical Insights</span>
+        </a>
+        <a class="menu-item" data-section="reports">
+          <i data-lucide="folder-down"></i>
+          <span>Data &amp; Reports</span>
+        </a>
+
+        <div class="menu-label">System</div>
+        <a class="menu-item" data-section="about">
+          <i data-lucide="info"></i>
+          <span>About &amp; Future Scope</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <span>Exchange: NSE India</span>
+        <span style="color: #10b981; font-weight: 700;">₹ INR</span>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-wrapper">
+      
+      <!-- Top Bar -->
+      <header class="top-navbar">
+        <div class="stock-picker-group">
+          <div class="stock-dropdown-box">
+            <select id="stock-select-input" class="stock-select-input">
+              <option value="RELIANCE.NS">Reliance Industries (RELIANCE.NS)</option>
+              <option value="TCS.NS">TCS (TCS.NS)</option>
+              <option value="INFY.NS">Infosys (INFY.NS)</option>
+              <option value="HDFCBANK.NS">HDFC Bank (HDFCBANK.NS)</option>
+              <option value="SBIN.NS">State Bank of India (SBIN.NS)</option>
+              <option value="ICICIBANK.NS">ICICI Bank (ICICIBANK.NS)</option>
+              <option value="ITC.NS">ITC (ITC.NS)</option>
+              <option value="BHARTIARTL.NS">Bharti Airtel (BHARTIARTL.NS)</option>
+            </select>
+          </div>
+
+          <div class="period-group">
+            <button class="period-pill" data-period="1mo">1M</button>
+            <button class="period-pill" data-period="6mo">6M</button>
+            <button class="period-pill active" data-period="1y">1Y</button>
+            <button class="period-pill" data-period="2y">2Y</button>
+          </div>
+        </div>
+
+        <div class="header-right-actions">
+          <div class="live-indicator">
+            <span class="pulse-dot"></span>
+            <span>Yahoo Finance Data</span>
+          </div>
+          <a href="/api/download-csv?symbol=RELIANCE.NS" id="topbar-csv-btn" class="btn-outline" download>
+            <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+            <span>Export CSV</span>
+          </a>
+          <a href="/api/download-notebook" class="btn-accent" download>
+            <i data-lucide="file-code" style="width: 14px; height: 14px;"></i>
+            <span>Jupyter Notebook</span>
+          </a>
+          <div class="user-profile-badge">
+            <span class="user-avatar"><i data-lucide="user"></i></span>
+            <span id="user-display-name">Guest Analyst</span>
+            <button id="btn-logout" class="btn-logout-icon" title="Sign Out">
+              <i data-lucide="log-out"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+
+        <!-- ============================================================== -->
+        <!-- SECTION 1: DASHBOARD -->
+        <!-- ============================================================== -->
+        <section id="section-dashboard" class="app-section active">
+          
+          <!-- Top Market Summary Bar -->
+          <div class="glass-panel market-summary-bar">
+            <div class="stock-identity">
+              <h2 id="dash-company-name">Reliance Industries</h2>
+              <div class="stock-badge-row">
+                <span id="dash-stock-ticker" class="font-mono" style="color: #38bdf8; font-weight: 700; font-size: 0.9rem;">RELIANCE.NS</span>
+                <span class="market-chip market-chip-nse">NSE</span>
+                <span id="dash-stock-sector" class="market-chip market-chip-sector">Energy &amp; Conglomerate</span>
+              </div>
+            </div>
+
+            <div class="price-display-block">
+              <div id="dash-current-price" class="big-price">₹1,322.00</div>
+              <div>
+                <span id="dash-price-change" class="price-change-pill price-up">
+                  <i data-lucide="trending-up" style="width: 13px; height: 13px;"></i>
+                  <span>+₹19.50 (+1.50%)</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="stat-pills-row">
+              <div class="mini-stat">
+                <div class="mini-stat-label">Trading Volume</div>
+                <div id="dash-volume" class="mini-stat-value">13.0M</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">52-Week High</div>
+                <div id="dash-52w-high" class="mini-stat-value" style="color: #38bdf8;">₹1,604.38</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">52-Week Low</div>
+                <div id="dash-52w-low" class="mini-stat-value" style="color: #ec4899;">₹1,180.20</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">Average Price</div>
+                <div id="dash-avg-price" class="mini-stat-value">₹1,348.40</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">Last Updated</div>
+                <div id="dash-last-updated" class="mini-stat-value" style="font-size: 0.85rem; color: #94a3b8;">Latest Available</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Stock Chart Card -->
+          <div class="glass-panel main-chart-card">
+            <div class="chart-header-bar">
+              <div class="chart-title-box">
+                <h3 id="main-chart-heading">Price Trend (₹ INR)</h3>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Historical session prices from the National Stock Exchange of India</span>
+              </div>
+
+              <div class="chart-controls-box">
+                <div class="series-toggle-group">
+                  <button class="series-btn active" data-series="Close">Close</button>
+                  <button class="series-btn" data-series="Open">Open</button>
+                  <button class="series-btn" data-series="High">High</button>
+                  <button class="series-btn" data-series="Low">Low</button>
+                  <button class="series-btn" data-series="Volume">Volume</button>
+                </div>
+
+                <button id="toggle-sma-btn" class="btn-accent" style="padding: 5px 12px; font-size: 0.78rem;">
+                  <i data-lucide="activity" style="width: 13px; height: 13px;"></i>
+                  <span>SMA 20: ON</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="chart-canvas-box">
+              <canvas id="main-interactive-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick Market Overview -->
+          <div class="grid-4">
+            <div class="glass-panel" style="padding: 20px;">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Market Feed</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #10b981; margin-top: 4px;">Live Connected</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Yahoo Finance NSE Data</div>
+            </div>
+
+            <div class="glass-panel" style="padding: 20px;">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Historical Span</div>
+              <div id="dash-records-count" class="font-mono" style="font-size: 1.4rem; font-weight: 800; color: #38bdf8; margin-top: 4px;">252 Sessions</div>
+              <div id="dash-date-span" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">-</div>
+            </div>
+
+            <div class="glass-panel" style="padding: 20px;">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Technical Indicators</div>
+              <div class="font-mono" style="font-size: 1.4rem; font-weight: 800; color: #a855f7; margin-top: 4px;">5 Computed</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">SMA, EMA, RSI, Return, Price Change</div>
+            </div>
+
+            <div class="glass-panel" style="padding: 20px;">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Data Integrity</div>
+              <div class="font-mono" style="font-size: 1.4rem; font-weight: 800; color: #10b981; margin-top: 4px;">100% Clean</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">0 Null Values • 0 Duplicates</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECTION 2: EXPLORE STOCKS -->
+        <!-- ============================================================== -->
+        <section id="section-explore" class="app-section">
+          <div style="margin-bottom: 22px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800;">Explore Stocks</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse supported equities from the National Stock Exchange of India (NSE). Click any stock card to select and analyze it.</p>
+          </div>
+
+          <!-- Sector Filter Bar -->
+          <div class="explore-filter-bar">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Sector Filter:</span>
+            <div class="sector-filter-pills">
+              <button class="sector-pill active" data-sector="all">All Sectors</button>
+              <button class="sector-pill" data-sector="Energy">Energy</button>
+              <button class="sector-pill" data-sector="IT">IT</button>
+              <button class="sector-pill" data-sector="Banking">Banking</button>
+              <button class="sector-pill" data-sector="FMCG">FMCG</button>
+              <button class="sector-pill" data-sector="Telecom">Telecom</button>
+            </div>
+          </div>
+
+          <!-- Stock Cards Grid (8 Real Supported NSE Stocks) -->
+          <div id="explore-stocks-grid" class="stock-cards-grid">
+            <!-- Populated dynamically by loadExploreStocks() with real cached market data -->
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECTION 3: MARKET ANALYSIS (3 FOCUSED CHARTS) -->
+        <!-- ============================================================== -->
+        <section id="section-analysis" class="app-section">
+          <div style="margin-bottom: 22px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800;">Market Analysis</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Core visual analysis of price trends, trading volume, and statistical feature correlation.</p>
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 22px;">
+            
+            <!-- Visualization 1: Price Trend -->
+            <div class="glass-panel" style="padding: 22px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Price Trend</h3>
+                <span style="font-size: 0.72rem; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 3px 8px; border-radius: 6px; font-weight: 600;">Close &amp; SMA 20 (₹ INR)</span>
+              </div>
+              <div style="height: 290px;">
+                <canvas id="chart-eda-close"></canvas>
+              </div>
+              <div class="observation-card">
+                <i data-lucide="info"></i>
+                <div class="obs-desc" id="obs-text-close">The closing price exhibits sustained trends with the 20-day SMA smoothing short-term fluctuations.</div>
+              </div>
+            </div>
+
+            <!-- Visualization 2: Trading Activity -->
+            <div class="glass-panel" style="padding: 22px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Trading Activity</h3>
+                <span style="font-size: 0.72rem; color: #8b5cf6; background: rgba(139, 92, 246, 0.1); padding: 3px 8px; border-radius: 6px; font-weight: 600;">Volume (Shares)</span>
+              </div>
+              <div style="height: 290px;">
+                <canvas id="chart-eda-volume"></canvas>
+              </div>
+              <div class="observation-card">
+                <i data-lucide="info"></i>
+                <div class="obs-desc" id="obs-text-volume">Volume spikes highlight market sessions with elevated institutional trading and liquidity.</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Visualization 3: Feature Correlation -->
+          <div class="glass-panel" style="padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1.05rem; font-weight: 700;">Feature Correlation</h3>
+              <span style="font-size: 0.72rem; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 6px; font-weight: 600;">Pearson Correlation Matrix</span>
+            </div>
+            <div id="heatmap-view-box" style="overflow-x: auto; min-height: 220px; margin-bottom: 14px;"></div>
+            <div class="observation-card">
+              <i data-lucide="info"></i>
+              <div class="obs-desc" id="obs-text-corr">Price attributes (Open, High, Low, Close) have near-perfect positive correlation (> 0.98), whereas Volume exhibits low direct linear correlation with price.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECTION 4: TECHNICAL INSIGHTS -->
+        <!-- ============================================================== -->
+        <section id="section-insights" class="app-section">
+          <div style="margin-bottom: 22px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800;">Technical Insights</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Calculated technical indicators, momentum signals, and trend analysis for the selected equity.</p>
+          </div>
+
+          <!-- 5 Core Indicators Cards Container -->
+          <div id="features-cards-container" class="grid-5" style="margin-bottom: 26px;">
+            <!-- Populated dynamically with live computed values -->
+          </div>
+
+          <!-- Technical Signal Interpretation & Market Summary Card -->
+          <div class="glass-panel" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: #38bdf8;">Technical Indicator Signal Interpretation</h3>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Real-Time Signal Synthesis</span>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 18px;">
+              <div class="insight-signal-card">
+                <div class="insight-signal-label">Trend Bias (SMA vs Price)</div>
+                <div id="signal-trend-bias" class="insight-signal-val font-mono" style="color: #10b981;">Bullish Above SMA</div>
+                <p id="signal-trend-desc" class="insight-signal-desc">Closing price is positioned relative to the 20-day moving average.</p>
+              </div>
+
+              <div class="insight-signal-card">
+                <div class="insight-signal-label">Momentum Condition (RSI)</div>
+                <div id="signal-momentum-state" class="insight-signal-val font-mono" style="color: #38bdf8;">Neutral Range</div>
+                <p id="signal-momentum-desc" class="insight-signal-desc">14-period RSI measures whether the asset is overbought or oversold.</p>
+              </div>
+
+              <div class="insight-signal-card">
+                <div class="insight-signal-label">Intraday Movement</div>
+                <div id="signal-intraday-state" class="insight-signal-val font-mono" style="color: #a855f7;">Positive Session</div>
+                <p id="signal-intraday-desc" class="insight-signal-desc">Difference between session open and close prices.</p>
+              </div>
+            </div>
+
+            <div style="padding: 14px 18px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border-card);">
+              <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Statistical Feature Methodology</div>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;">
+                Indicators are derived using chronological rolling windows. Simple and Exponential Moving Averages capture low-frequency price direction, while the 14-period Relative Strength Index and Daily Return provide normalized, stationary measures of momentum and volatility without lookahead bias.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECTION 5: DATA & REPORTS -->
+        <!-- ============================================================== -->
+        <section id="section-reports" class="app-section">
+          <div style="margin-bottom: 22px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800;">Data &amp; Reports</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Access clean, feature-engineered datasets, documentation, and analytical exports for the selected stock.</p>
+          </div>
+
+          <!-- Product-Style Export Hub (Only Real Working Downloads) -->
+          <div class="grid-2" style="margin-bottom: 24px;">
+            
+            <!-- Export Card 1: CSV -->
+            <div class="glass-panel report-export-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div class="report-card-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                  <i data-lucide="file-spreadsheet" style="width: 24px; height: 24px;"></i>
+                </div>
+                <span class="report-badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                  Ready for Export
+                </span>
+              </div>
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Clean Stock Dataset (CSV)</h3>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                Download the fully preprocessed, forward-fill imputed dataset with 13 technical features formatted in native ₹ INR for direct analysis in Excel, Python, or R.
+              </p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">Format: UTF-8 CSV (₹ INR)</span>
+                <a href="/api/download-csv?symbol=RELIANCE.NS" id="reports-download-csv-btn" class="btn-accent" download>
+                  <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                  <span>Download CSV</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Export Card 2: Jupyter Notebook -->
+            <div class="glass-panel report-export-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div class="report-card-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                  <i data-lucide="file-code" style="width: 24px; height: 24px;"></i>
+                </div>
+                <span class="report-badge" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
+                  Runnable Notebook
+                </span>
+              </div>
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">Data Analysis Notebook (.ipynb)</h3>
+              <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                Download the complete 45-cell Jupyter Notebook containing executable Python code for real data collection, validation, imputation, indicators, and statistical modeling.
+              </p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">Format: Jupyter Notebook (.ipynb)</span>
+                <a href="/api/download-notebook" class="btn-accent" download>
+                  <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                  <span>Download Notebook</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dataset Status & Preview Table -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">Processed Dataset Preview</h3>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 3px;">
+                  Active Stock: <strong id="reports-selected-stock" style="color: #38bdf8;">RELIANCE.NS</strong>
+                  <span style="margin: 0 8px;">•</span>
+                  Rows: <strong id="final-rows-count" class="font-mono" style="color: #10b981;">251</strong>
+                  <span style="margin: 0 8px;">•</span>
+                  Columns: <strong id="final-cols-count" class="font-mono" style="color: #a855f7;">13</strong>
+                  <span style="margin: 0 8px;">•</span>
+                  Currency: <strong style="color: #10b981;">₹ INR</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="fintech-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Open (₹)</th>
+                    <th>High (₹)</th>
+                    <th>Low (₹)</th>
+                    <th>Close (₹)</th>
+                    <th>Volume</th>
+                    <th>Price Change (₹)</th>
+                    <th>Price Spread (₹)</th>
+                    <th>SMA 20 (₹)</th>
+                    <th>EMA 20 (₹)</th>
+                    <th>Daily Return</th>
+                    <th>RSI</th>
+                    <th>Next Day Close (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="final-dataset-rows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Schema & Attribute Definitions -->
+          <div class="glass-panel" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;">Dataset Schema &amp; Specifications</h3>
+            <div class="table-responsive">
+              <table class="fintech-table">
+                <thead>
+                  <tr>
+                    <th>Attribute Name</th>
+                    <th>Description</th>
+                    <th>Data Type</th>
+                    <th>Measure / Unit</th>
+                  </tr>
+                </thead>
+                <tbody id="reports-dictionary-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECTION 6: ABOUT & FUTURE SCOPE -->
+        <!-- ============================================================== -->
+        <section id="section-about" class="app-section">
+          <div style="margin-bottom: 22px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800;">About &amp; Future Scope</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Product overview, five-step processing workflow, technology architecture, and planned predictive modeling.</p>
+          </div>
+
+          <!-- 1. Product Overview Card -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 22px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px;">
+              Project Overview
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;">
+              The <strong>AI Stock Prediction System</strong> is an intelligent data analytics and quantitative preprocessing platform engineered for equities listed on the <strong>National Stock Exchange of India (NSE)</strong>. The system provides real market data ingestion, automated quality assurance, domain-specific time-series imputation, rolling and exponential technical indicator computation, and structured dataset formatting in native Indian Rupees (₹ INR).
+            </p>
+          </div>
+
+          <!-- 2. Five-Step Data Pipeline Workflow -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 22px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #10b981; margin-bottom: 6px;">
+              Five-Step End-to-End Workflow
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px;">
+              How the platform converts raw market ticks into clean, model-ready financial datasets.
+            </p>
+
+            <div class="workflow-steps-grid">
+              <div class="workflow-step-card">
+                <div class="workflow-step-num">01</div>
+                <div class="workflow-step-title">Data Ingestion</div>
+                <div class="workflow-step-desc">Automated ingestion of daily OHLCV market feeds from Yahoo Finance using ticker-specific NSE identifiers.</div>
+              </div>
+
+              <div class="workflow-step-card">
+                <div class="workflow-step-num">02</div>
+                <div class="workflow-step-title">Quality Assurance</div>
+                <div class="workflow-step-desc">Deduplication by trading session, chronological sorting, and Forward Fill (ffill) missing price imputation.</div>
+              </div>
+
+              <div class="workflow-step-card">
+                <div class="workflow-step-num">03</div>
+                <div class="workflow-step-title">Feature Engineering</div>
+                <div class="workflow-step-desc">Computation of intraday spreads, rolling SMA 20, fast EMA 20, Daily Returns, and 14-period RSI oscillators.</div>
+              </div>
+
+              <div class="workflow-step-card">
+                <div class="workflow-step-num">04</div>
+                <div class="workflow-step-title">Statistical Analysis</div>
+                <div class="workflow-step-desc">Bivariate Pearson correlation matrix modeling and descriptive metric evaluation across price and volume.</div>
+              </div>
+
+              <div class="workflow-step-card">
+                <div class="workflow-step-num">05</div>
+                <div class="workflow-step-title">Export &amp; Readiness</div>
+                <div class="workflow-step-desc">Generation of clean 13-feature datasets with shifted target prices ($Next\_Day\_Close$) formatted in ₹ INR.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Technology Stack -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 22px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #a855f7; margin-bottom: 14px;">
+              Technology Stack
+            </h3>
+            <div class="grid-3">
+              <div class="tech-stack-card">
+                <div class="tech-stack-cat">Frontend Architecture</div>
+                <div class="tech-stack-title">Vanilla HTML5, CSS3 &amp; ES6+ JS</div>
+                <p class="tech-stack-desc">Custom dark fintech design system, Chart.js hardware-accelerated canvases, and Lucide vector iconography.</p>
+              </div>
+
+              <div class="tech-stack-card">
+                <div class="tech-stack-cat">Backend Services</div>
+                <div class="tech-stack-title">Python 3.10+ &amp; Flask 3.0+</div>
+                <p class="tech-stack-desc">RESTful API routes, asynchronous cache warmup, in-memory stream serialization, and CORS support.</p>
+              </div>
+
+              <div class="tech-stack-card">
+                <div class="tech-stack-cat">Analytics &amp; Data Science</div>
+                <div class="tech-stack-title">pandas, numpy, scikit-learn, yfinance</div>
+                <p class="tech-stack-desc">Vectorized time-series processing, mathematical rolling statistics, and feature normalization.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. How the Application Works -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 22px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #f59e0b; margin-bottom: 10px;">
+              How the Application Works
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;">
+              When an equity is selected, the frontend invokes the backend pipeline via resilient API fetchers. The Flask engine inspects the local disk cache for pre-computed calculations. If a refresh is required, the pipeline coordinates directly with Yahoo Finance, executes vectorized cleaning and indicator calculations, caches the structured response payload, and streams back real data. The client-side controller updates interactive charts, indicator cards, and dataset tables seamlessly.
+            </p>
+          </div>
+
+          <!-- 5. Future Machine Learning Development -->
+          <div class="glass-panel" style="padding: 24px; border-left: 4px solid var(--purple);">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #a855f7; margin-bottom: 10px;">
+              Future Machine Learning Development
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
+              Subsequent development phases will leverage this clean, feature-engineered dataset to train and benchmark predictive models:
+            </p>
+            <ul style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.8; margin-left: 20px;">
+              <li><strong>Machine Learning Regression:</strong> Linear Regression, Ridge, and Lasso regularization for next-session closing price forecasting.</li>
+              <li><strong>Directional Classification:</strong> Logistic Regression and Support Vector Machines for binary trend prediction (Up / Down).</li>
+              <li><strong>Advanced Ensemble Models:</strong> Random Forest Regressors, Gradient Boosting, and XGBoost for non-linear pattern recognition.</li>
+              <li><strong>Deep Learning Time-Series:</strong> Recurrent Neural Networks (LSTM &amp; GRU architectures) trained on sliding chronological sequences.</li>
+              <li><strong>Model Evaluation Benchmarking:</strong> Comparative evaluation via Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and MAPE.</li>
+              <li><strong>Backtesting &amp; Strategy Simulation:</strong> Historical forward simulation to benchmark quantitative trade profitability and Sharpe ratios.</li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
